@@ -59,7 +59,9 @@
     font-family: monospace;
     font-size: 1rem;
     font-weight: bold;
-    margin: 1rem
+    margin: 1rem;
+    border: none;
+
 }
 
 /* #buttons button:hover {

@@ -21,7 +21,7 @@ export default function Node({ isFinish, isStart, isWall, onMouseDown, onMouseUp
             id={`node-${row}-${col}`}
             className={`node ${extraClassName}`}
             onMouseDown={() => onMouseDown(row, col)}
-            onMouseEnter={() => onMouseEnter(row, col)}
+            onMouseMove={() => onMouseEnter(row, col)}
             onMouseUp={() => onMouseUp()}></div>
     );
 }

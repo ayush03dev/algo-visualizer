@@ -23,10 +23,8 @@ function helper(grid: GridNode[][], target: GridNode, row: number, col: number, 
 
 function getNeighbors(row: number, col: number, grid: GridNode[][]) {
     let result: number[][] = [];
-    const dx = [0, 1, 0, -1, -1, 1, 1, -1];
-    const dy = [1, 0, -1, 0, 1, 1, -1, -1];
-
-    // Diagonals are not working!!
+    const dx = [0, 1, 0, -1];
+    const dy = [1, 0, -1, 0];
 
     for (let i = 0; i < dx.length; i++) {
         const newX = row + dx[i];

@@ -6,30 +6,42 @@ import { getVisitedBFSNodes } from "./algorithms/BFS";
 import { getVisitedDFSNodes } from "./algorithms/DFS";
 import { PathfindingAlgorithm } from "./algorithms";
 
-const START_NODE_ROW = 10;
-const START_NODE_COL = 15;
-const FINISH_NODE_ROW = 10;
-const FINISH_NODE_COL = 35;
+const START_NODE_ROW = 5;
+const START_NODE_COL = 5;
+const FINISH_NODE_ROW = 5;
+const FINISH_NODE_COL = 20;
 
 export default function PathfindingVisualizer() {
     const [grid, setGrid] = useState<GridNode[][]>([]);
     const [mouseIsPressed, setMouseIsPressed] = useState<boolean>(false);
+    const [isGrabbingStart, setIsGrabbingStart] = useState<boolean>(false);
+    const [isGrabbingFinish, setIsGrabbingFinish] = useState<boolean>(false);
+    const [startLocation, setStartLocation] = useState<number[]>([START_NODE_ROW, START_NODE_COL]);
+    const [finishLocation, setFinishLocation] = useState<number[]>([FINISH_NODE_ROW, FINISH_NODE_COL]);
+    const [isReset, setIsReset] = useState<boolean>(true);
+    const [inProgress, setInProgress] = useState<boolean>(false);
+
     let promises: Promise<unknown>[] = [];
 
     useEffect(() => {
         setGrid(getInitialGrid());
+        window.addEventListener("mouseup", () => {
+            setMouseIsPressed(false);
+            if (isGrabbingStart) setIsGrabbingStart(false);
+            if (isGrabbingFinish) setIsGrabbingFinish(false);
+        });
     }, []);
 
     function getInitialGrid() {
         const grid: GridNode[][] = [];
-        for (let row = 0; row < ((window.innerHeight / 1.5) / 25); row++) {
+        for (let row = 0; row < ((window.innerHeight / 1.75) / 25); row++) {
             const currentRow: GridNode[] = [];
-            for (let col = 0; col < (window.innerWidth / 25) - 1; col++) {
+            for (let col = 0; col < ((document.getElementsByClassName("grid")[0] as HTMLElement).offsetWidth / 25) - 1; col++) {
                 currentRow.push({
                     col,
                     row,
-                    isStart: row === START_NODE_ROW && col === START_NODE_COL,
-                    isFinish: row === FINISH_NODE_ROW && col === FINISH_NODE_COL,
+                    isStart: row === startLocation[0] && col === startLocation[1],
+                    isFinish: row === finishLocation[0] && col === finishLocation[1],
                     distance: Infinity,
                     isVisited: false,
                     isWall: false,
@@ -42,6 +54,17 @@ export default function PathfindingVisualizer() {
     };
 
     function handleMouseDown(row: number, col: number) {
+        if (grid[row][col].isStart) {
+            setIsGrabbingStart(true);
+            setMouseIsPressed(true);
+            return;
+        }
+
+        if (grid[row][col].isFinish) {
+            setIsGrabbingFinish(true);
+            setMouseIsPressed(true);
+            return;
+        }
         const newGrid = getNewGridWithWallToggled(grid, row, col);
         setGrid(newGrid);
         setMouseIsPressed(true);
@@ -50,12 +73,39 @@ export default function PathfindingVisualizer() {
 
     function handleMouseEnter(row: number, col: number) {
         if (!mouseIsPressed) return;
+        if (isGrabbingStart) {
+            const node = grid[startLocation[0]][startLocation[1]];
+            const existingNode = grid[row][col];
+            if (existingNode.isFinish) return;
+            const newGrid = grid.slice();
+            newGrid[startLocation[0]][startLocation[1]] = { ...node, isStart: false };
+            newGrid[row][col] = { row, col, isStart: true, isVisited: false, previousNode: null, isFinish: false, distance: Infinity, isWall: false };
+            setGrid(newGrid);
+            setStartLocation([row, col]);
+            return;
+        }
+
+        if (isGrabbingFinish) {
+            const node = grid[finishLocation[0]][finishLocation[1]];
+            const existingNode = grid[row][col];
+            if (existingNode.isStart) return;
+            const newGrid = grid.slice();
+            newGrid[existingNode.row][existingNode.col] = { ...existingNode, isFinish: false };
+            newGrid[finishLocation[0]][finishLocation[1]] = { ...node, isFinish: false };
+            newGrid[row][col] = { row, col, isFinish: true, isVisited: false, previousNode: null, isStart: false, distance: Infinity, isWall: false };
+            setGrid(newGrid);
+            setFinishLocation([row, col]);
+            return;
+        }
         const newGrid = getNewGridWithWallToggled(grid, row, col);
         setGrid(newGrid);
     }
 
     function handleMouseUp() {
         setMouseIsPressed(false);
+        if (isGrabbingStart) setIsGrabbingStart(false);
+        if (isGrabbingFinish) setIsGrabbingFinish(false);
+
     }
 
     function getNewGridWithWallToggled(grid: GridNode[][], row: number, col: number) {
@@ -74,12 +124,11 @@ export default function PathfindingVisualizer() {
         switch (algorithm) {
             case PathfindingAlgorithm.DFS:
             default:
-                nodes = getVisitedDFSNodes(grid, grid[START_NODE_ROW][START_NODE_COL], grid[FINISH_NODE_ROW][FINISH_NODE_COL]);
+                nodes = getVisitedDFSNodes(grid, grid[startLocation[0]][startLocation[1]], grid[finishLocation[0]][finishLocation[1]]);
                 break;
             case PathfindingAlgorithm.BFS:
-                nodes = getVisitedBFSNodes(grid, grid[START_NODE_ROW][START_NODE_COL], grid[FINISH_NODE_ROW][FINISH_NODE_COL]);
+                nodes = getVisitedBFSNodes(grid, grid[startLocation[0]][startLocation[1]], grid[finishLocation[0]][finishLocation[1]]);
                 break;
-
         }
         for (let i = 0; i < nodes.length; i++) {
             promises.push(new Promise((resolve, reject) => {
@@ -97,8 +146,7 @@ export default function PathfindingVisualizer() {
     }
 
     function animatePath() {
-        // getVisitedDFSNodes(grid, grid[START_NODE_ROW][START_NODE_COL], grid[FINISH_NODE_ROW][FINISH_NODE_COL]);
-        let lastNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+        let lastNode = grid[finishLocation[0]][finishLocation[1]];
         const pathNodes: GridNode[] = [];
         while (lastNode.previousNode != null) {
             lastNode = lastNode.previousNode;
@@ -110,7 +158,6 @@ export default function PathfindingVisualizer() {
             promises.push(new Promise((resolve, reject) => {
                 setTimeout(() => {
                     const element = document.getElementById(`node-${pathNodes[i].row}-${pathNodes[i].col}`);
-                    console.log(element)
                     if (element)
                         element.className =
                             'node node-path';
@@ -123,8 +170,19 @@ export default function PathfindingVisualizer() {
     }
 
     async function handleClick(pathAlgorithm: PathfindingAlgorithm) {
+        setIsReset(false);
+        setInProgress(true);
         await animate(pathAlgorithm);
         await animatePath();
+        setInProgress(false);
+    }
+
+    function resetGrid() {
+        setGrid([]);
+        setIsReset(true);
+        setTimeout(() => {
+            setGrid(getInitialGrid());
+        }, 10)
     }
 
     return (<>
@@ -146,7 +204,7 @@ export default function PathfindingVisualizer() {
                                     onMouseEnter={() => handleMouseEnter(row, col)}
                                     onMouseUp={() => handleMouseUp()}
                                     row={row}
-                                    isVisited={isVisited}
+                                    isVisited={false}
                                 ></Node>
                             );
                         })}
@@ -154,6 +212,11 @@ export default function PathfindingVisualizer() {
                 );
             })}
         </div>
-        <button onClick={() => handleClick(PathfindingAlgorithm.BFS)}>Hello</button>
+
+        <div id="path-buttons">
+            <button disabled={inProgress || !isReset} onClick={() => handleClick(PathfindingAlgorithm.BFS)}>BFS</button>
+            <button disabled={inProgress || !isReset} onClick={() => handleClick(PathfindingAlgorithm.DFS)}>DFS</button>
+            <button disabled={inProgress} onClick={resetGrid}>Reset Grid</button>
+        </div >
     </>)
 }

@@ -3,7 +3,8 @@
     height: 25px;
     outline: 1px solid #44475a;
     display: inline-block;
-    background-color: #6272a4;
+    background-color: #f8f8f2;
+    /* background-color: ; */
 }
 
 .node-finish {
@@ -54,14 +55,14 @@
 
     100% {
         transform: scale(1);
-        background-color: pink;
+        background-color: #6272a4;
     }
 }
 
 .node-wall {
-    background-color: #bd93f9;
+    background-color: #ff79c6;
     animation-name: wallAnimation;
-    animation-duration: 0.5s;
+    animation-duration: 0.2s;
     animation-timing-function: ease-out;
     animation-delay: 0;
     animation-direction: alternate;
