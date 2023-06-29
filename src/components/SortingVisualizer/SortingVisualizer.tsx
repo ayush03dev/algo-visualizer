@@ -7,7 +7,7 @@ import { Algorithm } from "../../algorithms";
 import { getInsertionSortAnimation } from "../../algorithms/InsertionSort";
 import { Animation } from "../../interfaces/Animation";
 
-const ANIMATION_SPEED_MS = 5;
+const ANIMATION_SPEED_MS = 25;
 
 export const PRIMARY_COLOR = '#bd93f9';
 
@@ -20,7 +20,7 @@ export default function SortingVisualizer() {
 
     const [array, setArray] = useState<number[]>([]);
     const [numberBars, setNumberBars] = useState<number>(60);
-    const [speed, setSpeed] = useState<number>(3);
+    const [speed, setSpeed] = useState<number>(ANIMATION_SPEED_MS);
     const [sorted, setSorted] = useState<boolean>(true);
     const [runtime, setRuntime] = useState<number>(0);
     let promises: Promise<unknown>[] = [];
@@ -108,13 +108,13 @@ export default function SortingVisualizer() {
 
     async function sort(algortihm: Algorithm) {
 
-        const id = setInterval(() => {
-            console.log(runtime)
-            setRuntime(runtime => runtime + 1);
-        }, 1000);
-        if (isSorted()) {
-            resetArray();
-        }
+        // const id = setInterval(() => {
+        //     console.log(runtime)
+        //     setRuntime(runtime => runtime + 1);
+        // }, 1000);
+        // if (isSorted()) {
+        //     resetArray();
+        // }
         setSorted(false);
 
         await sortHelper(algortihm);
