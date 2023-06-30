@@ -13,15 +13,15 @@ interface Props {
     isVisited: boolean
 }
 
-export default function Node({ isFinish, isStart, isWall, onMouseDown, onMouseUp, row, col, onMouseEnter, isVisited }: Props) {
+export default function Node({ isFinish, isStart, isWall, onMouseDown, onMouseUp, row, col, onMouseEnter }: Props) {
 
     const extraClassName = isFinish ? 'node-finish' : isStart ? 'node-start' : isWall ? 'node-wall' : '';
     return (
         <div
             id={`node-${row}-${col}`}
             className={`node ${extraClassName}`}
-            onMouseDown={() => onMouseDown(row, col)}
-            onMouseMove={() => onMouseEnter(row, col)}
+            onMouseDown={(e: React.MouseEvent) => onMouseDown(e, row, col)}
+            onMouseMove={(e) => onMouseEnter(e, row, col)}
             onMouseUp={() => onMouseUp()}></div>
     );
 }

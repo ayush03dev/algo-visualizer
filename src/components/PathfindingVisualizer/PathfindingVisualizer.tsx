@@ -34,9 +34,9 @@ export default function PathfindingVisualizer() {
 
     function getInitialGrid() {
         const grid: GridNode[][] = [];
-        for (let row = 0; row < ((window.innerHeight / 1.75) / 25); row++) {
+        for (let row = 0; row < ((window.innerHeight / 1.75) / 40); row++) {
             const currentRow: GridNode[] = [];
-            for (let col = 0; col < ((document.getElementsByClassName("grid")[0] as HTMLElement).offsetWidth / 25) - 1; col++) {
+            for (let col = 0; col < ((document.getElementsByClassName("grid")[0] as HTMLElement).offsetWidth / 40) - 1; col++) {
                 currentRow.push({
                     col,
                     row,
@@ -53,7 +53,8 @@ export default function PathfindingVisualizer() {
         return grid;
     };
 
-    function handleMouseDown(row: number, col: number) {
+    function handleMouseDown(event: React.MouseEvent, row: number, col: number) {
+        event.preventDefault()
         if (grid[row][col].isStart) {
             setIsGrabbingStart(true);
             setMouseIsPressed(true);
@@ -71,7 +72,8 @@ export default function PathfindingVisualizer() {
 
     }
 
-    function handleMouseEnter(row: number, col: number) {
+    function handleMouseEnter(event: React.MouseEvent, row: number, col: number) {
+        event.preventDefault();
         if (!mouseIsPressed) return;
         if (isGrabbingStart) {
             const node = grid[startLocation[0]][startLocation[1]];
@@ -105,7 +107,6 @@ export default function PathfindingVisualizer() {
         setMouseIsPressed(false);
         if (isGrabbingStart) setIsGrabbingStart(false);
         if (isGrabbingFinish) setIsGrabbingFinish(false);
-
     }
 
     function getNewGridWithWallToggled(grid: GridNode[][], row: number, col: number) {
@@ -162,7 +163,7 @@ export default function PathfindingVisualizer() {
                         element.className =
                             'node node-path';
                     resolve(true);
-                }, i * 10)
+                }, i * 15)
             }));
 
         }
@@ -182,7 +183,7 @@ export default function PathfindingVisualizer() {
         setIsReset(true);
         setTimeout(() => {
             setGrid(getInitialGrid());
-        }, 10)
+        }, 15)
     }
 
     return (<>
@@ -200,8 +201,8 @@ export default function PathfindingVisualizer() {
                                     isStart={isStart}
                                     isWall={isWall}
                                     mouseIsPressed={mouseIsPressed}
-                                    onMouseDown={() => handleMouseDown(row, col)}
-                                    onMouseEnter={() => handleMouseEnter(row, col)}
+                                    onMouseDown={handleMouseDown}
+                                    onMouseEnter={handleMouseEnter}
                                     onMouseUp={() => handleMouseUp()}
                                     row={row}
                                     isVisited={false}
@@ -220,3 +221,26 @@ export default function PathfindingVisualizer() {
         </div >
     </>)
 }
+
+
+         // document.addEventListener("mouse", (e) => {
+        //     console.log(mouseIsPressed)
+        //     let parent = document.getElementsByClassName("grid")[0];
+        //     let bounds = parent.getBoundingClientRect();
+        //     let x = e.clientX - bounds.left;
+        //     let y = e.clientY - bounds.top;
+        //     x = Math.floor(x / 25);
+        //     y = Math.floor(y / 25);
+        //     console.log(x + " " + y);
+        // })
+
+        // window.addEventListener("mousedown", (e) => {
+        //     let parent = document.getElementsByClassName("grid")[0];
+        //     let bounds = parent.getBoundingClientRect();
+        //     let x = e.clientX - bounds.left;
+        //     let y = e.clientY - bounds.top;
+        //     x = Math.floor(x / 25);
+        //     y = Math.floor(y / 25);
+        //     console.log(x + " " + y);
+
+        // })

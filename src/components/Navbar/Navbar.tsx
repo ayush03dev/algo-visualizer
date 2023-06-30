@@ -18,9 +18,9 @@ export default function Navbar() {
             </div>
 
             <ul className="nav-list">
-                <li><a href="#">Sorting</a></li>
-                <li><a href="#">Pathfinding</a></li>
-                <li><a href="#">GitHub</a></li>
+                <li><a href="/sort">Sorting</a></li>
+                <li><a href="/pathfinder">Pathfinding</a></li>
+                <li><a href="https://github.com/ayush03dev/algo-visualizer">GitHub</a></li>
             </ul>
         </nav>
     )

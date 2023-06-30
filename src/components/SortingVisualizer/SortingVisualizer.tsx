@@ -107,14 +107,6 @@ export default function SortingVisualizer() {
     }
 
     async function sort(algortihm: Algorithm) {
-
-        // const id = setInterval(() => {
-        //     console.log(runtime)
-        //     setRuntime(runtime => runtime + 1);
-        // }, 1000);
-        // if (isSorted()) {
-        //     resetArray();
-        // }
         setSorted(false);
 
         await sortHelper(algortihm);
@@ -123,7 +115,6 @@ export default function SortingVisualizer() {
             let element = arrayBars[i];
             const promise = new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    // element.style.backgroundColor = "green";
                     element.classList.add("bar-visited");
                     resolve(true);
                 }, i * 10);
@@ -138,12 +129,6 @@ export default function SortingVisualizer() {
         if (event.target.id === "changeSize") {
             setNumberBars(parseInt(event.target.value) * 5);
         }
-    }
-
-    function stop() {
-        timers.forEach(clearTimeout);
-        // resetArray();
-        setSorted(true);
     }
 
     return (
@@ -171,14 +156,11 @@ export default function SortingVisualizer() {
                 <button onClick={() => sort(Algorithm.BUBBLE_SORT)} disabled={!sorted}>Bubble Sort</button>
                 <button onClick={() => sort(Algorithm.SELECTION_SORT)} disabled={!sorted}>Selection Sort</button>
                 <button onClick={() => sort(Algorithm.INSERTION_SORT)} disabled={!sorted}>Insertion Sort</button>
-                {/* {<button onClick={() => stop()}>Stop</button>} */}
             </div>
 
             <div>
                 <p>In Progress: {sorted ? "No" : "Yes"}</p>
-                <p>Total Elements: {numberBars}</p>
-                <p>Runtime: 2s</p>
-
+                <p>Total Bars: {numberBars}</p>
             </div>
         </div>
     )
