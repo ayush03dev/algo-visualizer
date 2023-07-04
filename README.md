@@ -30,3 +30,5 @@ React (using TypeScript)
    ```sh 
    npm start
    ```
+## Try It Live
+The application is hosted live on Netlify: https://algo-visualizer-03.netlify.app/
